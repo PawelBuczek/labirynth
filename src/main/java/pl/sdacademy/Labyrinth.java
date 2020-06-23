@@ -1,6 +1,8 @@
 package pl.sdacademy;
 
 public class Labyrinth {
+    // Lepiej, gdybyśmy po prostu mieli dwuwymiarową tablicę, wtedy dostęp do punktu o zadanych współrzędnych
+    // byłby błyskawiczny (nie musielibyśmy przebiegać w pętli przez wszystkie punkty).
     private final Point[] points;
     private Point currentPoint;
     private final String[] labyrinthStringLines;
@@ -49,6 +51,18 @@ public class Labyrinth {
         return null;
     }
 
+    // metody moveXYZ można by zapisać lepiej na różne sposoby, ale o nich będziemy dopiero sobie dopowiadać
+    // (typy wyliczeniowe, interfejsy funcjonalne itp.)
+    // W tym wypadku można by się pokusić o myk następujący:
+    // za każdym razem kolejność będzie następująca:
+    // WSEN i tak w koło. Czyli moglibyśmy powiedzieć, że wykonujemy ciąg kroków spośrod:
+    // WSENWSE
+    // z tymże od zadanego punktu i wykonujemy maksymalnie 4 kroki.
+    // Można by stworzyć metodę, która by zliczała wykonane kroki, do tego byłby switch, którego case'y
+    // reprezentowałyby właśnie ciąg: WSENWSE. Te wypisane przypadki miałyby instrukcję break wykonywaną,
+    // jeśli wykonaliśmy 4 kroki.
+    // W tym momencie można by uwspólnić kod tych 4 metod moveXYZ - stworzyć jedną metodę, która przyjmowałaby
+    // jako parametr informacje od którego punktu z ciągu WSENWSE startujemy.
     private void moveRight() {
         switch (currentDirection) {
             case 0:  //south

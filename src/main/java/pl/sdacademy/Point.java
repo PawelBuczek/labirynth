@@ -1,5 +1,8 @@
 package pl.sdacademy;
 
+// Klasa reprezentuje konkretny punkt labirynty - dobrze byłoby, gdyby zawierała też pole - wartość tego punktu.
+// Z klasy labirynt moglibyśmy wtedy usunąć pole labyrinthStringLines.
+// Zapis np. wiersza canGoNorth = lines[i - 1].charAt(j) == ' '; byłby wtedy czytelniejszy.
 public class Point {
     private final int x; //horizontal
     private final int y; //vertical
@@ -20,13 +23,7 @@ public class Point {
     }
 
     public Point(int x, int y, boolean isOpenNorth, boolean isOpenEast, boolean isOpenSouth, boolean isOpenWest) {
-        this.x = x;
-        this.y = y;
-        this.isOpenNorth = isOpenNorth;
-        this.isOpenEast = isOpenEast;
-        this.isOpenSouth = isOpenSouth;
-        this.isOpenWest = isOpenWest;
-        this.isExit = false;
+        this(x, y, isOpenNorth, isOpenEast, isOpenSouth, isOpenWest, false);
     }
 
     public int getX() {
