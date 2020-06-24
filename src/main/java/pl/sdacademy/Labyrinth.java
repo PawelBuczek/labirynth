@@ -1,176 +1,50 @@
 package pl.sdacademy;
 
+/**
+ * represents a 2D text labyrinth with entrance in the upper-left corner and exit in the bottom-right corner
+ */
 public class Labyrinth {
-    // Lepiej, gdybyśmy po prostu mieli dwuwymiarową tablicę, wtedy dostęp do punktu o zadanych współrzędnych
-    // byłby błyskawiczny (nie musielibyśmy przebiegać w pętli przez wszystkie punkty).
-    private final Point[] points;
+    private final Point[][] points;
     private Point currentPoint;
     private final String[] labyrinthStringLines;
-    private int currentDirection;
+    private int currentDirection = 3;
     private String solution = "";
 
+    /**
+     * creates a new Labyrinth from given String in a specific format - taken from: http://www.delorie.com/game-room/mazes/genmaze.cgi (Text type, Width + Height = 2).
+     * @param labyrinthString text labyrinth representation
+     */
     public Labyrinth(String labyrinthString) {
         String[] lines = labyrinthString.split("\\r?\\n");
         this.labyrinthStringLines = lines;
-        points = new Point[(lines.length / 2) * (lines[0].length() / 2)];
-        boolean canGoSouth;
-        boolean canGoEast;
-        boolean canGoNorth;
-        boolean canGoWest;
-        int counter = 0;
+        points = new Point[(lines.length / 2)][(lines[0].length() / 2)];
         for (int i = 1; i < lines.length; i += 2) {
             for (int j = 1; j < lines[i].length(); j += 2) {
-                canGoNorth = lines[i - 1].charAt(j) == ' ';
-                canGoEast = lines[i].charAt(j + 1) == ' ';
-                canGoSouth = lines[i + 1].charAt(j) == ' ';
-                if (i == 1 && j == 1) {
-                    canGoWest = false;  //there is an exit there, but that's too easy!
+                if (i == lines.length - 2 & j == lines[0].length() - 2) {
+                    points[i / 2][j / 2] = new Point(lines[i].charAt(j), j / 2, i / 2, lines[i - 1].charAt(j) == ' ', lines[i].charAt(j + 1) == ' ', lines[i + 1].charAt(j) == ' ', lines[i].charAt(j - 1) == ' ', true);
                 } else {
-                    canGoWest = lines[i].charAt(j - 1) == ' ';
+                    points[i / 2][j / 2] = new Point(lines[i].charAt(j), j / 2, i / 2, lines[i - 1].charAt(j) == ' ', lines[i].charAt(j + 1) == ' ', lines[i + 1].charAt(j) == ' ', lines[i].charAt(j - 1) == ' ');
                 }
-
-                if (counter == points.length - 1) {
-                    points[counter] = new Point(j / 2, i / 2, canGoNorth, canGoEast, canGoSouth, canGoWest, true);
-                } else {
-                    points[counter] = new Point(j / 2, i / 2, canGoNorth, canGoEast, canGoSouth, canGoWest);
-                }
-                counter++;
             }
         }
-        currentPoint = getPoint(0, 0);
+        currentPoint = points[0][0];
     }
 
-
-    private Point getPoint(int x, int y) {
-        for (Point point : points) {
-            if (point.getX() == x && point.getY() == y) {
-                return point;
-            }
-        }
-        System.out.println("Point with given parameters was not found.");
-        return null;
-    }
-
-    // metody moveXYZ można by zapisać lepiej na różne sposoby, ale o nich będziemy dopiero sobie dopowiadać
-    // (typy wyliczeniowe, interfejsy funcjonalne itp.)
-    // W tym wypadku można by się pokusić o myk następujący:
-    // za każdym razem kolejność będzie następująca:
-    // WSEN i tak w koło. Czyli moglibyśmy powiedzieć, że wykonujemy ciąg kroków spośrod:
-    // WSENWSE
-    // z tymże od zadanego punktu i wykonujemy maksymalnie 4 kroki.
-    // Można by stworzyć metodę, która by zliczała wykonane kroki, do tego byłby switch, którego case'y
-    // reprezentowałyby właśnie ciąg: WSENWSE. Te wypisane przypadki miałyby instrukcję break wykonywaną,
-    // jeśli wykonaliśmy 4 kroki.
-    // W tym momencie można by uwspólnić kod tych 4 metod moveXYZ - stworzyć jedną metodę, która przyjmowałaby
-    // jako parametr informacje od którego punktu z ciągu WSENWSE startujemy.
-    private void moveRight() {
-        switch (currentDirection) {
-            case 0:  //south
-                if (moveWest()) {
-                    break;
-                }
-                if (moveSouth()) {
-                    break;
-                }
-                if (moveEast()) {
-                    break;
-                }
-                moveNorth();
-                break;
-            case 1:  //west
-                if (moveNorth()) {
-                    break;
-                }
-                if (moveWest()) {
-                    break;
-                }
-                if (moveSouth()) {
-                    break;
-                }
-                moveEast();
-                break;
-            case 2:  //north
-                if (moveEast()) {
-                    break;
-                }
-                if (moveNorth()) {
-                    break;
-                }
-                if (moveWest()) {
-                    break;
-                }
-                moveSouth();
-                break;
-            default: //east
-                if (moveSouth()) {
-                    break;
-                }
-                if (moveEast()) {
-                    break;
-                }
-                if (moveNorth()) {
-                    break;
-                }
-                moveWest();
-                break;
-        }
-
-    }
-
-    public boolean moveNorth() {
-        if (currentPoint.isOpenNorth()) {
-            currentPoint = getPoint(currentPoint.getX(), currentPoint.getY() - 1);
-            currentDirection = 2;
-            solution += "N";
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean moveEast() {
-        if (currentPoint.isOpenEast()) {
-            currentPoint = getPoint(currentPoint.getX() + 1, currentPoint.getY());
-            currentDirection = 3;
-            solution += "E";
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean moveSouth() {
-        if (currentPoint.isOpenSouth()) {
-            currentPoint = getPoint(currentPoint.getX(), currentPoint.getY() + 1);
-            currentDirection = 0;
-            solution += "S";
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean moveWest() {
-        if (currentPoint.isOpenWest()) {
-            currentPoint = getPoint(currentPoint.getX() - 1, currentPoint.getY());
-            currentDirection = 1;
-            solution += "W";
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+    /**
+     * tries to get out of the labyrinth, returning solution to the user  (current algorithm - keep right hand pressed against the wall)
+     * @param printEachMove instructs method if after each move a current state should be printed with current position, or only entry and exit states
+     * @return text containing moves done in order to get out of the maze (e.g. NSSE would mean that to get out you need to move North, then South, then South, then East)
+     */
     public String resolve(boolean printEachMove) {
         String solutionToPrint;
         while (!currentPoint.isExit()) {
-            if (printEachMove || (currentPoint.getX() ==0 && currentPoint.getY()==0)) {
+            if (printEachMove || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
                 System.out.println();
                 markCurrentPosition();
                 print();
                 removeCurrentPosition();
             }
-            moveRight();
+            move();
         }
         System.out.println();
         markCurrentPosition();
@@ -180,22 +54,109 @@ public class Labyrinth {
         return solutionToPrint;
     }
 
+    /**
+     * prints current state of the labyrinth to the console
+     * (could be done using points[][] - then labyrinthStringLines would be redundant. but too much work for today - I will try to upgrade it later on)
+     */
     public void print() {
         for (String s : labyrinthStringLines) {
             System.out.println(s);
         }
     }
 
+    /**
+     * marks current position in the labyrinthStringLines
+     */
     private void markCurrentPosition() {
         StringBuilder labString = new StringBuilder(labyrinthStringLines[(currentPoint.getY() * 2) + 1]);
         labString.setCharAt((currentPoint.getX() * 2) + 1, '#');
         labyrinthStringLines[(currentPoint.getY() * 2) + 1] = labString.toString();
     }
 
+    /**
+     * removes current position in the labyrinthStringLines
+     */
     private void removeCurrentPosition() {
         StringBuilder labString = new StringBuilder(labyrinthStringLines[(currentPoint.getY() * 2) + 1]);
         labString.setCharAt((currentPoint.getX() * 2) + 1, ' ');
         labyrinthStringLines[(currentPoint.getY() * 2) + 1] = labString.toString();
+    }
+
+    /**
+     * executes next move according to the current algorithm
+     */
+    private void move() {
+        for (int i = 0; i < 4; i++) {
+            if (tryMovingForward()) {
+                break;
+            } else {
+                turnLeft();
+            }
+        }
+        turnRight();
+    }
+
+    /**
+     * changes currentDirection to be facing right of what it currently faces (e.g. if currentDirection is equal South (0), then it changes it to West (1))
+     */
+    private void turnRight() {
+        if (currentDirection == 3) {
+            currentDirection = 0;
+        } else {
+            currentDirection++;
+        }
+    }
+
+    /**
+     * changes currentDirection to be facing left of what it currently faces (e.g. if currentDirection is equal North (2), then it changes it to West (1))
+     */
+    private void turnLeft() {
+        if (currentDirection == 0) {
+            currentDirection = 3;
+        } else {
+            currentDirection--;
+        }
+    }
+
+    /**
+     * tries moving by 1 space in the current Direction
+     * @return true - successfully moved forward in the current direction. current position was updated  ;  false - move couldn't be performed. current position stays the same
+     */
+    private boolean tryMovingForward() {
+        switch (currentDirection) {
+            case 0:  //south
+                if (currentPoint.isOpenSouth()) {
+                    currentPoint = points[currentPoint.getY() + 1][currentPoint.getX()];
+                    solution += "S";
+                    return true;
+                } else {
+                    return false;
+                }
+            case 1:  //west
+                if (currentPoint.isOpenWest()) {
+                    currentPoint = points[currentPoint.getY()][currentPoint.getX() - 1];
+                    solution += "W";
+                    return true;
+                } else {
+                    return false;
+                }
+            case 2:  //north
+                if (currentPoint.isOpenNorth()) {
+                    currentPoint = points[currentPoint.getY() - 1][currentPoint.getX()];
+                    solution += "N";
+                    return true;
+                } else {
+                    return false;
+                }
+            default:  //east
+                if (currentPoint.isOpenEast()) {
+                    currentPoint = points[currentPoint.getY()][currentPoint.getX() + 1];
+                    solution += "E";
+                    return true;
+                } else {
+                    return false;
+                }
+        }
     }
 
 }
