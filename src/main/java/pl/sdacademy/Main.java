@@ -1,9 +1,13 @@
 package pl.sdacademy;
 
 public class Main {
+    /**
+     * testing Labyrinth class - added '!' sign at the start of the Labyrinths
+     * @param args desc
+     */
     public static void main(String[] args) {
         String labyrinthString1 = "+-+-+-+-+-+-+-+-+-+-+\n" +
-                "  |                 |\n" +
+                "! |                 |\n" +
                 "+ + +-+-+ +-+-+-+-+ +\n" +
                 "|   |   | |   |   | |\n" +
                 "+-+-+ + + + + + + + +\n" +
@@ -28,7 +32,7 @@ public class Main {
 
         System.out.println(System.lineSeparator() + " --- | Entering Labyrinth nr 2 | --- " + System.lineSeparator());
         String labyrinthString2 = "+-+-+-+-+\n" +
-                "    |   |\n" +
+                "!   |   |\n" +
                 "+-+ + + +\n" +
                 "|   | | |\n" +
                 "+ +-+ + +\n" +
