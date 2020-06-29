@@ -40,13 +40,13 @@ public class Labyrinth implements Runnable {
     /**
      * tries to get out of the labyrinth, returning solution to the user  (current algorithm - keep right hand pressed against the wall)
      *
-     * @param printSlowly instructs method if after each move a current state should be printed with current position, or only entry and exit states
+     * @param printEachMove instructs method if after each move a current state should be printed with current position, or only entry and exit states
      * @return text containing moves done in order to get out of the maze (e.g. NSSE would mean that to get out you need to move North, then South, then South, then East)
      */
-    public String resolve(boolean printSlowly) throws InterruptedException {
+    public String resolve(boolean printEachMove) throws InterruptedException {
         String solutionToPrint;
         while (!currentPoint.isExit()) {
-            if (printSlowly || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
+            if (printEachMove || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
                 //noinspection BusyWait
                 Thread.sleep(500);
                 System.out.println();
@@ -56,6 +56,7 @@ public class Labyrinth implements Runnable {
             }
             move();
         }
+        Thread.sleep(500);
         System.out.println();
         markCurrentPosition();
         print();
