@@ -3,7 +3,8 @@ package pl.sdacademy;
 /**
  * represents a 2D text labyrinth with entrance in the upper-left corner and exit in the bottom-right corner
  */
-public class Labyrinth {
+public class Labyrinth implements Runnable {
+    private Thread t;  //not sure, it seems I don't need this, hmmm
     private final Point[][] points;
     private Point currentPoint;
     private final String[] labyrinthStringLines;
@@ -12,6 +13,7 @@ public class Labyrinth {
 
     /**
      * creates a new Labyrinth from given String in a specific format - taken from: http://www.delorie.com/game-room/mazes/genmaze.cgi (Text type, Width + Height = 2).
+     *
      * @param labyrinthString text labyrinth representation
      */
     public Labyrinth(String labyrinthString) {
@@ -30,15 +32,23 @@ public class Labyrinth {
         currentPoint = points[0][0];
     }
 
+    public void run() {
+
+    }
+
+
     /**
      * tries to get out of the labyrinth, returning solution to the user  (current algorithm - keep right hand pressed against the wall)
-     * @param printEachMove instructs method if after each move a current state should be printed with current position, or only entry and exit states
+     *
+     * @param printSlowly instructs method if after each move a current state should be printed with current position, or only entry and exit states
      * @return text containing moves done in order to get out of the maze (e.g. NSSE would mean that to get out you need to move North, then South, then South, then East)
      */
-    public String resolve(boolean printEachMove) {
+    public String resolve(boolean printSlowly) throws InterruptedException {
         String solutionToPrint;
         while (!currentPoint.isExit()) {
-            if (printEachMove || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
+            if (printSlowly || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
+                //noinspection BusyWait
+                Thread.sleep(500);
                 System.out.println();
                 markCurrentPosition();
                 print();
@@ -120,6 +130,7 @@ public class Labyrinth {
 
     /**
      * tries moving by 1 space in the current Direction
+     *
      * @return true - successfully moved forward in the current direction. current position was updated  ;  false - move couldn't be performed. current position stays the same
      */
     private boolean tryMovingForward() {
