@@ -90,7 +90,6 @@ public class App extends Application {
                 if (keyPressed) {
                     if (labyrinth.getCurrentPoint().isExit()) {
                         if (labyrinthNr < labyrinthCount) {
-                            System.out.println(labyrinthNr);
                             labyrinth = new Labyrinth(takeLabyrinthStringFromFile(labyrinthNr));
                             topInfo = new Label("Labyrinth " + labyrinthNr + "/3");
                             topInfo.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
@@ -110,6 +109,7 @@ public class App extends Application {
                 }
             }
         }.start();
+
         stage.show();
     }
 
