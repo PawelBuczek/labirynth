@@ -3,16 +3,23 @@ package pl.sdacademy;
 /**
  * represents a 2D text labyrinth with entrance in the upper-left corner and exit in the bottom-right corner
  */
-public class Labyrinth implements Runnable {
-    private Thread t;  //not sure, it seems I don't need this, hmmm
+public class Labyrinth {
     private final Point[][] points;
     private Point currentPoint;
     private final String[] labyrinthStringLines;
     private int currentDirection = 3;
     private String solution = "";
 
+    public String getLabyrinthString() {
+        StringBuilder sb = new StringBuilder();
+        for (String labyrinthStringLine : labyrinthStringLines) {
+            sb.append(labyrinthStringLine).append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
     /**
-     * creates a new Labyrinth from given String in a specific format - taken from: http://www.delorie.com/game-room/mazes/genmaze.cgi (Text type, Width + Height = 2).
+     * creates a new Labyrinth from given String in a specific format - taken from: http://www.delorie.com/game-room/mazes/genmaze.cgi (Text type, Width and Height = 2).
      *
      * @param labyrinthString text labyrinth representation
      */
@@ -30,39 +37,11 @@ public class Labyrinth implements Runnable {
             }
         }
         currentPoint = points[0][0];
-    }
-
-    public void run() {
-
-    }
-
-
-    /**
-     * tries to get out of the labyrinth, returning solution to the user  (current algorithm - keep right hand pressed against the wall)
-     *
-     * @param printEachMove instructs method if after each move a current state should be printed with current position, or only entry and exit states
-     * @return text containing moves done in order to get out of the maze (e.g. NSSE would mean that to get out you need to move North, then South, then South, then East)
-     */
-    public String resolve(boolean printEachMove) throws InterruptedException {
-        String solutionToPrint;
-        while (!currentPoint.isExit()) {
-            if (printEachMove || (currentPoint.getX() == 0 && currentPoint.getY() == 0)) {
-                //noinspection BusyWait
-                Thread.sleep(500);
-                System.out.println();
-                markCurrentPosition();
-                print();
-                removeCurrentPosition();
-            }
-            move();
-        }
-        Thread.sleep(500);
-        System.out.println();
         markCurrentPosition();
-        print();
-        solutionToPrint = solution;
-        solution = "";
-        return solutionToPrint;
+    }
+
+    public Point getCurrentPoint() {
+        return currentPoint;
     }
 
     /**
@@ -93,82 +72,35 @@ public class Labyrinth implements Runnable {
         labyrinthStringLines[(currentPoint.getY() * 2) + 1] = labString.toString();
     }
 
-    /**
-     * executes next move according to the current algorithm
-     */
-    private void move() {
-        for (int i = 0; i < 4; i++) {
-            if (tryMovingForward()) {
-                break;
-            } else {
-                turnLeft();
-            }
-        }
-        turnRight();
-    }
 
     /**
-     * changes currentDirection to be facing right of what it currently faces (e.g. if currentDirection is equal South (0), then it changes it to West (1))
+     * tries moving by 1 space in the given direction
      */
-    private void turnRight() {
-        if (currentDirection == 3) {
-            currentDirection = 0;
-        } else {
-            currentDirection++;
-        }
-    }
-
-    /**
-     * changes currentDirection to be facing left of what it currently faces (e.g. if currentDirection is equal North (2), then it changes it to West (1))
-     */
-    private void turnLeft() {
-        if (currentDirection == 0) {
-            currentDirection = 3;
-        } else {
-            currentDirection--;
-        }
-    }
-
-    /**
-     * tries moving by 1 space in the current Direction
-     *
-     * @return true - successfully moved forward in the current direction. current position was updated  ;  false - move couldn't be performed. current position stays the same
-     */
-    private boolean tryMovingForward() {
-        switch (currentDirection) {
+    void tryMoving(int direction) {
+        removeCurrentPosition();
+        switch (direction) {
             case 0:  //south
                 if (currentPoint.isOpenSouth()) {
                     currentPoint = points[currentPoint.getY() + 1][currentPoint.getX()];
-                    solution += "S";
-                    return true;
-                } else {
-                    return false;
                 }
+                break;
             case 1:  //west
                 if (currentPoint.isOpenWest()) {
                     currentPoint = points[currentPoint.getY()][currentPoint.getX() - 1];
-                    solution += "W";
-                    return true;
-                } else {
-                    return false;
                 }
+                break;
             case 2:  //north
                 if (currentPoint.isOpenNorth()) {
                     currentPoint = points[currentPoint.getY() - 1][currentPoint.getX()];
-                    solution += "N";
-                    return true;
-                } else {
-                    return false;
                 }
+                break;
             default:  //east
                 if (currentPoint.isOpenEast()) {
                     currentPoint = points[currentPoint.getY()][currentPoint.getX() + 1];
-                    solution += "E";
-                    return true;
-                } else {
-                    return false;
                 }
+                break;
         }
+        markCurrentPosition();
     }
 
 }
