@@ -7,8 +7,6 @@ public class Labyrinth {
     private final Point[][] points;
     private Point currentPoint;
     private final String[] labyrinthStringLines;
-    private int currentDirection = 3;
-    private String solution = "";
 
     public String getLabyrinthString() {
         StringBuilder sb = new StringBuilder();
@@ -44,15 +42,15 @@ public class Labyrinth {
         return currentPoint;
     }
 
-    /**
-     * prints current state of the labyrinth to the console
-     * (could be done using points[][] - then labyrinthStringLines would be redundant. but too much work for today - I will try to upgrade it later on)
-     */
-    public void print() {
-        for (String s : labyrinthStringLines) {
-            System.out.println(s);
-        }
-    }
+//    /**
+//     * prints current state of the labyrinth to the console
+//     * (could be done using points[][] - then labyrinthStringLines would be redundant. but too much work for today - I will try to upgrade it later on)
+//     */
+//    public void print() {
+//        for (String s : labyrinthStringLines) {
+//            System.out.println(s);
+//        }
+//    }
 
     /**
      * marks current position in the labyrinthStringLines

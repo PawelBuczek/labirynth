@@ -47,6 +47,7 @@ public class App extends Application {
         labyrinth = new Labyrinth(takeLabyrinthStringFromFile(labyrinthNr++));
         gameVBox = new VBox();
         topInfo = new Label("Labyrinth " + labyrinthNr + "/3");
+        topInfo.setTextFill(Color.BLUE);
         topInfo.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
         gameVBox.getChildren().add(topInfo);
         labyrinthMap = new Label(labyrinth.getLabyrinthString());
@@ -54,6 +55,7 @@ public class App extends Application {
         labyrinthMap.setBorder(new Border(new BorderStroke(Color.GREY, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
         gameVBox.getChildren().add(labyrinthMap);
         bottomInfo = new Label("Controls: Arrow keys or WASD keys to move");
+        bottomInfo.setTextFill(Color.DARKGRAY);
         gameVBox.getChildren().add(bottomInfo);
         gameVBox.setAlignment(Pos.CENTER);
         gameVBox.setSpacing(12.0);
@@ -71,19 +73,19 @@ public class App extends Application {
             @Override
             public void handle(long now) {
                 keyPressed = false;
-                if (removeActiveKey("DOWN")) {
+                if (removeActiveKey("DOWN") || removeActiveKey("S")) {
                     labyrinth.tryMoving(0);
                     keyPressed = true;
                 }
-                if (removeActiveKey("LEFT")) {
+                if (removeActiveKey("LEFT") || removeActiveKey("A")) {
                     labyrinth.tryMoving(1);
                     keyPressed = true;
                 }
-                if (removeActiveKey("UP")) {
+                if (removeActiveKey("UP") || removeActiveKey("W")) {
                     labyrinth.tryMoving(2);
                     keyPressed = true;
                 }
-                if (removeActiveKey("RIGHT")) {
+                if (removeActiveKey("RIGHT") || removeActiveKey("D")) {
                     labyrinth.tryMoving(3);
                     keyPressed = true;
                 }
@@ -92,6 +94,7 @@ public class App extends Application {
                         if (labyrinthNr < labyrinthCount) {
                             labyrinth = new Labyrinth(takeLabyrinthStringFromFile(labyrinthNr));
                             topInfo = new Label("Labyrinth " + labyrinthNr + "/3");
+                            topInfo.setTextFill(Color.BLUE);
                             topInfo.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
                         }
                         labyrinthNr++;
@@ -102,6 +105,7 @@ public class App extends Application {
                     gameVBox.getChildren().setAll(topInfo, labyrinthMap, bottomInfo);
                     if (labyrinthNr > labyrinthCount) {
                         topInfo = new Label("Congratulations! You have completed the game");
+                        topInfo.setTextFill(Color.GREEN);
                         button = new Button("Exit Game");
                         button.setOnAction(event -> System.exit(0));
                         gameVBox.getChildren().setAll(topInfo, button);
